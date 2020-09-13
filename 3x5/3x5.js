@@ -31,6 +31,13 @@ ${localStorage[l+2]||d}</textarea><canvas${s}3 width=3 height=5></canvas></div>`
 [...z].map(l=>draw(c=this[l+3],fromBinaryASCII(this[l+2].value),c.onmousedown=c.onmousemove=onM))
 
 
+//;(I.onchange=e=>[...I.value.toUpperCase(O.width=I.value.length*4)].map((l,i)=>draw(O,fromBinaryASCII((L=this[l+2])?L.value:"0".repeat(15),i*4))))()
+
+
+
+
+
+
 // I=T.value
 // drawOnCanvas(C,fromBinaryASCII(I))
 

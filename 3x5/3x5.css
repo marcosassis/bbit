@@ -15,7 +15,10 @@ height:50px;
 }
 textarea{
 border:none;
-text-align: center;
 resize:none;
 margin:1em auto;
+}
+#I,#O{
+text-align:center;
+width:100%;
 }
