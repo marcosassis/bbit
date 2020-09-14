@@ -1,5 +1,38 @@
 // GPLv3 marcos assis 2020
 
+// monochrome, monospaced
+
+Glyph=function(width,height,code,char){
+  // row-major, MSB first
+  XYtoIndex=(x,y)=>(height-y)*width-x-1
+  return{
+    code,char,width,height,
+    getBit(i){
+      return code>>i&1
+    },
+    setBit(i,v){
+      v^this.getBit(i)?code^=1<<i:0
+    },
+    toString_3x5(lineSep='\n'){
+      return (code&0x7FFF).toString(2).padStart(15,0).match(/.../g).join(lineSep)
+    },
+    fromStringBinary(A){
+      A.match(/0|1/g).map((a,i)=>this.setBit(~~a,i))
+    },
+    getXY(x,y){
+      return this.getBit(XYtoIndex(x,y))
+    },
+    setXY(x,y,v){
+      this.setBit(XYtoIndex(x,y),v)
+    }
+  }
+}
+
+Font=function(width,height,alphabet){
+
+}
+
+
 w=3,h=5
 z="ABCDEFGHIJKLMNOPQRSTUWVXYZ.!"
 
