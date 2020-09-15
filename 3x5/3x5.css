@@ -1,9 +1,15 @@
+*{
+padding:0;
+margin:0;
+}
 #G{
 display:grid;
-display: grid;
-grid-template-columns:repeat(auto-fill,minmax(2rem,1fr));
-gap:1rem;
+/* grid-template-columns:repeat(auto-fill,30px); */
+grid-template-columns:repeat(auto-fit,minmax(30px,1fr));
+gap:10px;
 user-select:none;
+padding:10px;
+text-align:center;
 }
 canvas{
 image-rendering:-moz-crisp-edges;
@@ -16,8 +22,10 @@ height:50px;
 textarea{
 border:none;
 resize:none;
-margin:1em auto;
+text-align:center;
+margin:5px auto;
 overflow:hidden;
+width:auto;
 }
 #I,#O{
 text-align:center;

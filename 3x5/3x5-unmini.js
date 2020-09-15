@@ -62,10 +62,10 @@ Editor=function(font){
     createElements(){
       G.innerHTML=font.glyphs.map((g,i)=>`
 <div id=D${i=i}>
-<textarea id=T${i} rows=${font.height} cols=${font.width-1}>
+<textarea id=T${i} rows=${h=font.height} style="width:${w=font.width}ch">
 ${g.toString()}
 </textarea>
-<canvas id=C${i} width=${font.width} height=${font.height}>
+<canvas id=C${i} width=${w} height=${h}>
 </canvas>
 </div>`).join``;
       font.glyphs.map((g,i)=>{
