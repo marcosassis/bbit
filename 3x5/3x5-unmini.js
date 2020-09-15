@@ -6,15 +6,18 @@ Glyph=function(width,height,code,char){
   // row-major, MSB first
   XYtoIndex=(x,y)=>(height-y)*width-x-1
   return{
-    code,char,width,height,
+    width,height,code,char,
     getBit(i){
-      return code>>i&1
+      return this.code>>i&1
     },
     setBit(i,v){
-      v^this.getBit(i)?code^=1<<i:0
+      v^this.getBit(i) ? this.code^=1<<i : 0
     },
-    toString_3x5(lineSep='\n'){
-      return (code&0x7FFF).toString(2).padStart(15,0).match(/.../g).join(lineSep)
+    toString(lineSep='\n'){
+      return (this.code&0x7FFF).toString(2)
+                .padStart(15,0)
+                .match(eval(`/.{${width}}/g`))
+                .join(lineSep)
     },
     fromStringBinary(A){
       A.match(/0|1/g).map((a,i)=>this.setBit(~~a,i))
@@ -24,60 +27,92 @@ Glyph=function(width,height,code,char){
     },
     setXY(x,y,v){
       this.setBit(XYtoIndex(x,y),v)
+    },
+    drawPixel(ctx,x,y){
+      ctx.fillRect(x,y,1,1,ctx.fillStyle=this.getXY(x,y)?"#000":"#fff")
+    },
+    draw(ctx){
+      for(x=0;x<width;++x)
+        for(y=0;y<height;++y)
+          this.drawPixel(ctx,x,y)
     }
   }
 }
 
-Font=function(width,height,alphabet){
-
+Font=function(width,height,glyphs=[]){
+  return{
+    width,height,glyphs,
+    addGlyph(code,char){
+      this.glyphs.push(Glyph(width,height,code,char))
+    },
+    from(str,codes=0){
+      [...str].map((c,i)=>this.addGlyph(codes[i]||c.charCodeAt(),c))
+      return this
+    }
+  }
 }
 
+ev=ff=0
+Editor=function(font){
+  return{
+    font,
+    elementsString(g,i){
+      return 
+    },
+    createElements(){
+      G.innerHTML=font.glyphs.map((g,i)=>`
+<div id=D${i=i}>
+<textarea id=T${i} rows=${font.height} cols=${font.width-1}>
+${g.toString()}
+</textarea>
+<canvas id=C${i} width=${font.width} height=${font.height}>
+</canvas>
+</div>`).join``;
+      font.glyphs.map((g,i)=>{
+        C=document.getElementById('C'+i)
+        g.draw(C.getContext`2d`)
+        C.onmousedown=C.onmousemove=e=>{
+          ev=e
+          ff=font
+          b=e.buttons
+          c=e.target
+          if(!b||b&2)return
+          r=c.getBoundingClientRect()
+          x=(e.x-r.left)*c.width/c.clientWidth|0
+          y=(e.y-r.top)*c.height/c.clientHeight|0
+          t=e.target
+          i=t.getAttribute`id`.slice(1)|0
+          font.glyphs[i].setXY(x,y,v=b==1)
+          T=document.getElementById('T'+i)
+          T.value=font.glyphs[i].toString()
+          font.glyphs[i].draw(c.getContext`2d`)
+          this.save()
+        }
+      })
+    },
+    save(){
+      localStorage["_"+font.width+"x"+font.height]=JSON.stringify({
+        chars: font.glyphs.map(g=>g.char).join``,
+        codes: font.glyphs.map(g=>g.code).join()
+      })
+    },
+    load(){
+      if(r=JSON.parse(localStorage["_"+font.width+"x"+font.height])){
+        font.glyphs=[]
+        font.from(r.chars,r.codes.split`,`)
+        font.glyphs.map((g,i)=>g.draw(document.getElementById('C'+i).getContext`2d`))
+      }
+      return r
+    }
+  }
+}
 
 w=3,h=5
 z="ABCDEFGHIJKLMNOPQRSTUWVXYZ.!"
-
-// rom-major
-fromBinaryASCII=A=>A.match(/0|1/g).map(a=>~~a)
-
-drawPixel=(C,x,y,v)=>(X=C.getContext`2d`).fillRect(x,y,1,1,X.fillStyle=v?"#000":"#fff")
-
-draw=(C,M)=>M.map((v,i)=>drawPixel(C,i%w,i/w|0,v))
-drawASCII=(C,A)=>draw(C,fromBinaryASCII(A))
-
-L=localStorage
-U=Uint16Array
-
-_3x5=L._3x5?U.from(L._3x5.split`,`):U.from(z).map((a,i)=>z[i].charCodeAt())
-
-glyphIndex=l=>z.indexOf(l)
-glyph=(l)=>_3x5[glyphIndex(l)]
-getBit=(l,i)=>glyph(l)>>i&1
-setBit=(l,i,v)=>v^getBit(l,i)?_3x5[glyphIndex(l)]^=1<<i:0
-
-loadASCII=(l,A)=>fromBinaryASCII(A).map((a,i)=>setBit(l,i,a))
-
-toASCII=(l)=>(glyph(l)&0x7FFF).toString(2).padStart(15,0).match(/.../g).join`\n`
-//{for(g=glyph(l),i=15,r='';i--;i%w||i^14?0:r+='\n')r+=getBit(g,i%w,i/w|0);return r}
-//glyph(l).toString(2).padStart(15,0).match(/.../g).reverse().join`\n`
-
-onM=e=>{
-b=e.buttons
-c=e.target
-if(!b||b&2)return
-r=c.getBoundingClientRect()
-x=(e.x-r.left)*c.width/c.clientWidth|0
-y=(e.y-r.top)*c.height/c.clientHeight|0
-drawPixel(c,x,y,v=b==1)
-t=e.target
-setBit(l=t.getAttribute`id`[0],(h-y-1)*w+(w-x-1),v)
-this[l+2].value=toASCII(l)
-//L._3x5=_3x5
-//console.log(l,x,y,v,e)
-}
-
-G.innerHTML=z.replace(/./g,l=>`<div${s=' id='+l}1><textarea${s}2 rows=5 cols=2>
-${toASCII(l)}</textarea><canvas${s}3 width=3 height=5></canvas></div>`);
-[...z].map(l=>draw(c=this[l+3],fromBinaryASCII(this[l+2].value),c.onmousedown=c.onmousemove=onM))
+fo=Font(w,h).from(z)
+ed=Editor(fo)
+ed.createElements()
+ed.load()
 
 
 fromPBM=I=>{

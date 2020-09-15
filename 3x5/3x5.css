@@ -17,6 +17,7 @@ textarea{
 border:none;
 resize:none;
 margin:1em auto;
+overflow:hidden;
 }
 #I,#O{
 text-align:center;
