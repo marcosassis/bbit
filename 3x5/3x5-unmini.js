@@ -100,7 +100,10 @@ ${g.toString()}
       if(r=JSON.parse(localStorage["_"+font.width+"x"+font.height])){
         font.glyphs=[]
         font.from(r.chars,r.codes.split`,`)
-        font.glyphs.map((g,i)=>g.draw(document.getElementById('C'+i).getContext`2d`))
+        font.glyphs.map((g,i)=>{
+          g.draw(document.getElementById('C'+i).getContext`2d`)
+          document.getElementById('T'+i).value=g.toString()
+        })
       }
       return r
     }

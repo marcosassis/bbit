@@ -23,9 +23,8 @@ textarea{
 border:none;
 resize:none;
 text-align:center;
-margin:5px auto;
+margin:0 0 5px 0;
 overflow:hidden;
-width:auto;
 }
 #I,#O{
 text-align:center;
