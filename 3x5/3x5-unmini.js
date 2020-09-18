@@ -75,16 +75,14 @@ ${g.toString()}
           ev=e
           ff=font
           b=e.buttons
-          b=e.wich
           c=e.target
-          //if(!b||b&2)return
-          if(!b)return
+          if(!b||b&2)return
           r=c.getBoundingClientRect()
           x=(e.x-r.left)*c.width/c.clientWidth|0
           y=(e.y-r.top)*c.height/c.clientHeight|0
           t=e.target
           i=t.getAttribute`id`.slice(1)|0
-          font.glyphs[i].setXY(x,y,v=b!=3)
+          font.glyphs[i].setXY(x,y,v=b==1)
           T=document.getElementById('T'+i)
           T.value=font.glyphs[i].toString()
           font.glyphs[i].draw(c.getContext`2d`)
