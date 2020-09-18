@@ -84,7 +84,7 @@ ${g.toString()}
           y=(e.y-r.top)*c.height/c.clientHeight|0
           t=e.target
           i=t.getAttribute`id`.slice(1)|0
-          font.glyphs[i].setXY(x,y,v=b==3)
+          font.glyphs[i].setXY(x,y,v=b!=3)
           T=document.getElementById('T'+i)
           T.value=font.glyphs[i].toString()
           font.glyphs[i].draw(c.getContext`2d`)
