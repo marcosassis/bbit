@@ -28,13 +28,13 @@ Glyph=function(width,height,code,char){
     setXY(x,y,v){
       this.setBit(XYtoIndex(x,y),v)
     },
-    drawPixel(ctx,x,y){
-      ctx.fillRect(x,y,1,1,ctx.fillStyle=this.getXY(x,y)?"#000":"#fff")
+    drawPixel(ctx,x,y,dx=0,dy=0){
+      ctx.fillRect(x+dx,y+dy,1,1,ctx.fillStyle=this.getXY(x,y)?"#000":"#fff")
     },
-    draw(ctx){
+    draw(ctx,dx=0,dy=0){
       for(x=0;x<width;++x)
         for(y=0;y<height;++y)
-          this.drawPixel(ctx,x,y)
+          this.drawPixel(ctx,x,y,dx,dy)
     }
   }
 }
@@ -71,7 +71,7 @@ ${g.toString()}
       font.glyphs.map((g,i)=>{
         C=document.getElementById('C'+i)
         g.draw(C.getContext`2d`)
-        C.onmousedown=C.onmousemove=e=>{
+        C.onpointerdown=C.onpointermove=e=>{
           ev=e
           ff=font
           b=e.buttons

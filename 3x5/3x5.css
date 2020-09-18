@@ -23,10 +23,11 @@ textarea{
 border:none;
 resize:none;
 text-align:center;
-margin:0 0 5px 0;
+margin:0 5px;
 overflow:hidden;
 }
 #I,#O{
 text-align:center;
 width:100%;
+height:50px;
 }
